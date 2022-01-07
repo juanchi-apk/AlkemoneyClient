@@ -15,7 +15,7 @@ function Admin() {
     <div className="Admin">
         <div className="Button">
           
-          <Link to="/"><button type="button" class="btn btn-primary">Homepage</button></Link>
+          <Link to="/"><button type="button" className="btn btn-primary">Homepage</button></Link>
 
   
     

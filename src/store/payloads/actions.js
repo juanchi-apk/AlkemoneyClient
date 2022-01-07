@@ -14,6 +14,8 @@ import {CHANGE_USER,
     
     }
 from '../actions/actionTypes';
+import {useDispatch, useSelector} from 'react-redux'
+
 
 
 export function setUser(user){
@@ -51,20 +53,6 @@ export function setAllCategories(categories){
 }
 
 export function onAuth(result, token){
-    
-  
-
-    const  {email, givenName , familyName , googleId} = result
-    const dataForm = {
-        username : email, 
-        firstname: givenName,
-        lastname: familyName, 
-        email:email, 
-        password:googleId
-    }
-
-    singWithGoogle(dataForm)
-
     return {type: AUTH, payload: { result, token } };
 }
 export function onLogout(){
@@ -72,15 +60,11 @@ export function onLogout(){
 }
 
 export  function onSignUp(result, token){
-
-    
     return {type: SIGNUP, payload: { result, token }}
 }
 
 export function onSignIn(result, token){       
-    
     return {type: SIGNIN, payload: { result, token } };
-    
 }
 
 

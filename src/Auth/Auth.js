@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { Parallax, Background } from 'react-parallax';
 import Image from '../Assets/Images/background.jpg';
 import { Fade } from 'react-reveal';
 import { GoogleLogin } from 'react-google-login';
-import { connect ,useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { onAuth , onSignUp, onSignIn} from '../store/payloads/actions';
-import {signUpUser, signInUser } from '../api/auth';
+import {signUpUser, signInUser ,singWithGoogle } from '../api/auth';
 
 import("./Auth.scss");
 
@@ -21,21 +21,19 @@ const formStateData = {
     email:"",
     password:"",
     confirmPassword:"",
-}
+};
+
+const googleID= "701837201168-ja3csd91ipqfietfuvi09pc3cmtnqijr.apps.googleusercontent.com";
 
 
 function Auth({ onAuthLogin, signUpUsers, signInUsers }) {
     
-    
-
     const navigate = useNavigate()
-    const Googleid = "701837201168-ja3csd91ipqfietfuvi09pc3cmtnqijr.apps.googleusercontent.com"
     const [isSignUp, setIsSignUp] = useState(false)
     const [users, setUsers] = useState(JSON.parse(localStorage.getItem('profile')))
     const [formData, setFormData] = useState(formStateData)
+    const dispatch = useDispatch()
 
-    
-    
     const  handleFormChanges =  (event) =>{
         event.preventDefault();
         setFormData({...formData, [event.target.name] : event.target.value})
@@ -46,9 +44,11 @@ function Auth({ onAuthLogin, signUpUsers, signInUsers }) {
         
         if(!isSignUp) {
             await signUpUsers(formData)
-
+            navigate('/dashboard', { replace: true })
         } else {
             await signInUsers(formData)
+            navigate('/dashboard', { replace: true })
+
         }
 
     }
@@ -56,6 +56,8 @@ function Auth({ onAuthLogin, signUpUsers, signInUsers }) {
     const handleIsSignUp = () => {
         setIsSignUp(prevSetIsSignUp => !prevSetIsSignUp)
     }
+
+
     const googleFailure = (error) => {
         console.log(error)
         console.log("Google Sign In Failed")
@@ -64,17 +66,16 @@ function Auth({ onAuthLogin, signUpUsers, signInUsers }) {
     const googleSuccess = async (res) => {
         const result = res?.profileObj;
         const token = res?.tokenId;
-
-       await onAuthLogin(result, token)
-        
-       setUsers(JSON.parse(localStorage.getItem('profile')))
-        //navigate("/dashboard")
-        //window.location.reload();
-
+        dispatch(onAuth(result, token))
+        await singWithGoogle(result);
+        navigate('/dashboard', { replace: true })
     }
+
     useEffect(() => {
         setUsers(JSON.parse(localStorage.getItem('profile')))
-    }, [])
+    },[]) 
+
+  
 
     return (
 
@@ -115,7 +116,7 @@ function Auth({ onAuthLogin, signUpUsers, signInUsers }) {
 
                                     <div className="social-btn text-center">
                                         <GoogleLogin
-                                            clientId={Googleid}
+                                            clientId={googleID}
                                             render={(renderProps) => (
                                                 <button
                                                     className="btn btn-danger btn-lg"
@@ -216,13 +217,15 @@ const mapStateToProps = (state) => {
 function mapDispatchToProps(dispatch) {
     return {
         onAuthLogin:  async function (result, token) {
-            dispatch( onAuth(result, token))
+          
         },
+
         signUpUsers: async function (formData){
             const user = await signUpUser(formData)
             const {result, token} = user.data
             dispatch( onSignUp(result, token))
         },
+
         signInUsers:  async function (formData){
             const user = await signInUser(formData)
             const {result, token} = user.data
@@ -231,7 +234,7 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Auth);
+export default Auth;
 
 
 

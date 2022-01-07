@@ -7,6 +7,7 @@ import {store} from './store/store';
 import { Provider } from 'react-redux';
 import Admin from './admin/Admin';
 import Navbar from './navbar/Navbar';
+import Dashboard from './Dashboard/Dashboard';
 
   
 ReactDOM.render(
@@ -17,7 +18,7 @@ ReactDOM.render(
 
       <Routes>
         <Route exact path="/" element={<App/>}/>
-        <Route exact path="/dashboard" element={<Admin/>}/>
+        <Route exact path="/dashboard" element={<Dashboard/>}/>
 
      
       </Routes>

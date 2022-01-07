@@ -65,18 +65,18 @@ export function rootReducer(state = initialState, action) {
             case SET_CAT_NAME: 
             return {
                 ...state,
-                catname : action.payload.catname
+                catname : action.payload.catname,
             }
             case AUTH: 
-            
-            localStorage.setItem('profile', JSON.stringify({...action?.payload}))
-
-            return {
-                ...state,
-                authData: action.payload
+                localStorage.setItem('profile', JSON.stringify({...action.payload}))
+                
+                return {
+                    ...state,
+                    authData: action.payload,
             }
             case LOGOUT: 
             localStorage.clear()
+            
             return {
                 ...state,
                 authData:null
@@ -84,7 +84,7 @@ export function rootReducer(state = initialState, action) {
             case SET_ALL_CAT: 
             return {
                 ...state,
-                categories : action.payload.categories
+                categories : action.payload.categories,
             }
 
             case SIGNIN:
@@ -92,14 +92,14 @@ export function rootReducer(state = initialState, action) {
 
                 return {
                     ...state,
-                    authData: action.payload
+                    authData: action.payload,
                 }
                 case SIGNUP:
-                localStorage.setItem('profile', JSON.stringify({...action?.payload}))
+                localStorage.setItem('profile', JSON.stringify({...action.payload}))
 
                 return {
                     ...state,
-                    authData: action.payload
+                    authData: action.payload,
                 }
 
             

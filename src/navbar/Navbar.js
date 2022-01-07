@@ -2,27 +2,26 @@
 import React from 'react';
 import {Link, useNavigate  } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { onLogout } from '../store/payloads/actions';
-import {connect, useDispatch} from 'react-redux'
+import { useDispatch, useSelector} from 'react-redux'
 import("./navbar.scss");
 
 
-function Navbar(onAuthLogout) {
-  
-    const navigate = useNavigate()
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')))
-    const dispatch = useDispatch()
-    const logout = () =>{
-        dispatch({ type: 'LOGOUT' })
-        setUser(null)
-        navigate("/")
-        window.location.reload();
-    }
+function Navbar() {
 
-    useEffect(() => {
-      const token = user?.token
-      setUser(JSON.parse(localStorage.getItem('profile')))
-    },[])
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const stateUser = useSelector(state => state.authData)
+    const [user, setUser] = useState(stateUser)
+
+     
+    const  logout = async () =>{
+        dispatch({ type: 'LOGOUT' })
+        navigate("/" , {replace: false})
+    }
+    useEffect(()=>{
+        setUser(stateUser)
+    },[stateUser])
+    
 
     return(
         <nav className="navbar navbar-dark bg-dark">
@@ -52,12 +51,5 @@ function Navbar(onAuthLogout) {
 }
 
 
-function mapDispatchToProps(dispatch){
-    return {
-   
-      onAuthLogout: () => {dispatch(onLogout())}, 
-    }
-  }
-
-  export default connect( null, mapDispatchToProps)(Navbar);
+  export default Navbar
 
