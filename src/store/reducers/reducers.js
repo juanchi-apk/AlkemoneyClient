@@ -9,7 +9,10 @@ import {CHANGE_USER,
         AUTH,
         LOGOUT,
         SIGNUP,
-        SIGNIN
+        SIGNIN,
+        SET_TRANSACTIONS,
+        NEW_TRANSACTION,
+     
        
     } from '../actions/actionTypes';
 
@@ -24,13 +27,17 @@ const initialState = {
     errors: undefined,
     catname:"",
     categories:null,
-    authData : null
+    authData : null,
+    transactions:[] ,
+    outcomes: 0,
+    incomes: 0,
+    balance: 0,
    
 
     
 }
 
-export function rootReducer(state = initialState, action) {
+export function rootReducer(state = initialState,  action) {
     switch (action.type) {
             case CHANGE_USER: 
             return {
@@ -46,8 +53,9 @@ export function rootReducer(state = initialState, action) {
             return {
                 ...state,
                 password : action.payload.password
-            }
+            } 
             case SET_ERROR: 
+            console.log(action.payload)
             return {
                 ...state,
                 errors : action.payload.errors
@@ -68,19 +76,47 @@ export function rootReducer(state = initialState, action) {
                 catname : action.payload.catname,
             }
             case AUTH: 
-                localStorage.setItem('profile', JSON.stringify({...action.payload}))
                 
                 return {
                     ...state,
                     authData: action.payload,
             }
             case LOGOUT: 
-            localStorage.clear()
+            
+            localStorage.clear("reduxState");
+
             
             return {
-                ...state,
-                authData:null
+             ...initialState
             }
+            case SET_TRANSACTIONS:  
+           /*   let allTransactionArray=[];
+                action.payload.transactions.forEach(transaction => {
+               
+                    allTransactionArray.push(transaction)})
+
+           
+            console.log(allTransactionArray) */
+            return {
+                ...state,
+                transactions: action.payload.transactions.allTransactions,
+                balance: action.payload.transactions.balance,
+                incomes: action.payload.transactions.incomes,
+                outcomes: action.payload.transactions.outcomes,
+
+                
+            }
+            case NEW_TRANSACTION:
+              
+               
+                return{
+                    ...state,
+                    transactions:state.transactions.concat(action.payload.transactions)
+                   
+                    
+
+                }
+            
             case SET_ALL_CAT: 
             return {
                 ...state,
@@ -88,20 +124,19 @@ export function rootReducer(state = initialState, action) {
             }
 
             case SIGNIN:
-                localStorage.setItem('profile', JSON.stringify({...action?.payload}))
 
                 return {
                     ...state,
                     authData: action.payload,
                 }
                 case SIGNUP:
-                localStorage.setItem('profile', JSON.stringify({...action.payload}))
 
                 return {
                     ...state,
                     authData: action.payload,
                 }
 
+               
             
             default:
             return state;

@@ -1,115 +1,134 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useRef  } from 'react';
 
-import { setAllCategories } from '../store/payloads/actions';
-import { connect } from 'react-redux';
+import { setAllCategories, setNewTransaction } from '../store/payloads/actions';
+import { connect ,useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import('./UserCreate.scss')
+import { createUserTransaction } from '../api/transactions';
+import CategoryCreate from './CategoryCreate';
 
+import('./transactionCreate.scss')
 
+const transactionForm = {
+    isIncome:true,
+    isOutcome:false,
+    amount:"",
+    category: "",
+    details: "",
+}
 
 function TransactionCreate({
-    onDetailChange,
-    onTypeSet,
-    onUserset,
+    userData,
     onGetCategories,
-    onCatSet,
-    onAmountChange,
-    onFormErrors,
-    details,
-    type,
-    user_id,
-    cat_id,
-    amount,
     errors,
     categories,
 }) {
 
-
+    const stateUser = useSelector(state => state.authData);
     const [tranFormErrors, setTranFormErrors] = useState(false);
+    const [transactionData, settransactionData] = useState(transactionForm)
+    const dispatch = useDispatch();
+/*     const [userData, setUserData] = useState(stateUser)
+ */    
+
+    const [transactionType, setTransactionType] = useState( {
+        income:true,
+        outcome:false,
+    });
+  
+
+
+    
+
+    const  handleFormChanges =  (event) =>{
+        event.preventDefault();
+        console.log(event.target)
+        if(event.target.type==="radio"){
+           
+            settransactionData({...transactionData, isIncome :!transactionData.isIncome, isOutcome:!transactionData.isOutcome})
+        }else{
+
+            settransactionData({...transactionData, [event.target.name] : event.target.value})
+         
+        }
+
+       
+    }
 
     useEffect(() => {
         onGetCategories()
-    }, [])
+    }, [onGetCategories])
 
 
-    async function newUser(event) {
+    async function handleCreateTransaction(event) {
+      event.preventDefault()
+      console.log(transactionData);
+       const response = await createUserTransaction(userData, transactionData)
+        console.log(response)
+        dispatch(setNewTransaction(response))
+        window.location.reload(false)
+       /* let TransactionData : {
 
-        event.preventDefault();
+       }; */
+/*        
+const newTransaction = await () 
 
-        try {
-            const response = await axios.post(`http://localhost:3001/transaction/add`, {
-                details,
-                type,
-                user_id,
-                cat_id,
-                amount,
-            });
 
-            // Success 🎉
-            console.log(response);
-
-        } catch (error) {
-            console.log(error)
-            setTranFormErrors(true)
-           /*  if (error.response) {
-                if (error.response.status === 404) {
-                    onFormErrors(null)
-                }
-                else {
-                    onFormErrors(error.response.data)
-                }
-            } else if (error.request) {
-                console.log(error)
-            } else {
-                // Something happened in setting up the request and triggered an Error
-                console.log(error)
-            } */
-        }
+ */       
     }
+/* 
 
+
+*/
     return (
-        <div className="container-fluid mx-auto col-sm-12">
-            <div className="col-sm-5 mx-auto">
-                <form>
+      
+            <div className="col-sm-5 mx-auto formBackground">
+                <form className='formFields ' onSubmit={handleCreateTransaction}>
                     <div className="form-group row col-sm-12 mx-auto text-center">
                         Select type of transaction
                     </div>
-                    <div className="form-group row col-sm-12 mx-auto">
-                        <div className="form-check col-sm-5 mx-auto">
-                            <input className="form-check-input" type="radio" name="typeRadio" id="flexRadioDefault1" />
+                    <div className="form-group row col-sm-12 mx-auto"> 
+                        <div className="form-check form-check-inline col-sm-5 mx-auto">
+                            <input className="form-check-input" type="radio" name="isIncome" id="flexRadioDefault1" onChange={handleFormChanges}  checked = {transactionData.isIncome} />
                             <label className="form-check-label" htmlFor="flexRadioDefault1">
                                 Incomes
                             </label>
                         </div>
-                        <div className="form-check col-sm-5 mx-auto">
-                            <input className="form-check-input" type="radio" name="typeRadio" id="flexRadioDefault2" />
+                        <div className="form-check form-check-inline col-sm-5 mx-auto">
+                            <input className="form-check-input" type="radio" name="isOutcome" id="flexRadioDefault2" onChange={handleFormChanges}  focus={transactionData.isOutcome.toString()} checked={transactionData.isOutcome}/>
                             <label className="form-check-label" htmlFor="flexRadioDefault2">
                                 Outcomes
                             </label>
                         </div>
-                    </div>
+                     </div>
                     <div className="form-group row col-sm-12 mx-auto">
                         <label htmlFor="inputAmount" className="col-sm-3 col-form-label">Amount</label>
                         <div className="col-sm-9">
-                            <input type="text" className="form-control " name="inputAmount" id="inputAmount" placeholder="Insert the amount, separated by ','" onInput={(e) => onAmountChange(e.target.value)} />
+                            <input type="text" className="form-control " name="amount" id="amount" placeholder="Insert the amount, separated by ','" onChange={handleFormChanges}/>
                         </div>
                     </div>
-                    <select className="form-select" aria-label="Default select example">
+                    <div className="form-group row col-sm-12 mx-auto">
+                    <label htmlFor="inputAmount" className="col-sm-3 col-form-label">Category</label>
+                    <div className="col-sm-9">
+
+                    <select className="form-select" name='category' aria-label="Default select example" onChange={handleFormChanges}>
                         <option defaultValue>Select your category</option>
                         { categories!==null && categories.map(category => {
                                return( 
-                                      <option key={category.cat_id} value={category.cat_id}>
+                                      <option key={category.cat_id} name='category' value={category.cat_id}  >
                                         {category.cat_name}
                                       </option> 
                                         )                  
                         })
                     }
-                        
+                    
                     </select>
+                    </div>
+                    </div>
+                    <CategoryCreate/>
                     <div className="form-group row col-sm-12 mx-auto">
                         <label htmlFor="inputDetails" className="col-sm-3 col-form-label">Details</label>
                         <div className="col-sm-9">
-                            <input type="text" className="form-control " name="inputDetails" id="inputDetails" placeholder="If you like describe some details about the operation" onInput={(e) => onDetailChange(e.target.value)} />
+                            <input type="text" className="form-control " name="details" id="inputDetails" placeholder="If you like describe some details about the operation" onChange={handleFormChanges}/>
                         </div>
                     </div>
 
@@ -127,12 +146,12 @@ function TransactionCreate({
                     )}
                     <div className="form-group row mx-auto">
                         <div className="offset-sm-2 col-sm-10">
-                            <button type="submit" className="btn btn-primary" onClick={event => newUser(event)}>Action</button>
+                            <button type="submit" className="btn btn-primary" >Action</button>
                         </div>
                     </div>
                 </form>
             </div>
-        </div>
+     
 
     )
 }

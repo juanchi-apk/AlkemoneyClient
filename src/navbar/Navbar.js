@@ -11,17 +11,14 @@ function Navbar() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const stateUser = useSelector(state => state.authData)
-    const [user, setUser] = useState(stateUser)
 
      
     const  logout = async () =>{
         dispatch({ type: 'LOGOUT' })
         navigate("/" , {replace: false})
     }
-    useEffect(()=>{
-        setUser(stateUser)
-    },[stateUser])
-    
+
+ 
 
     return(
         <nav className="navbar navbar-dark bg-dark">
@@ -30,17 +27,17 @@ function Navbar() {
                     <h3 className = "navbar-brand brandtitle">Alkemoney</h3>
          
                 <div className="d-flex userBar" >
-                    {user? (
+                    {stateUser? (
                     <>
-                        {user.result.ImageUrl && (
+                        {stateUser.result.ImageUrl && (
 
                             <>
-                            <img className='userBar' src={user.result.ImageUrl}  alt="user"></img>
+                            <img className='userBar' src={stateUser.result.ImageUrl}  alt="user"></img>
                             </>
                         )}    
                         
                     
-                    <h6 style={{color:"white", marginRight:"10px" }}>Bienvenido {user.result.givenName||user.result.first_name}!!!</h6>
+                    <h6 style={{color:"white", marginRight:"10px" }}>Bienvenido {stateUser.result.givenName||stateUser.result.first_name}!!!</h6>
                     <button  type="button" className="btn btn-success" onClick={logout}>Log Out</button>
                     </>
                     ):(<></>)}

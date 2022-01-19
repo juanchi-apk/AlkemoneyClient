@@ -1,48 +1,29 @@
-import {signUpUser, signInUser , singWithGoogle} from '../../api/auth';
-import {CHANGE_USER, 
-        CHANGE_PASSWORD, 
-        CHANGE_EMAIL,
-        CHANGE_NAME,
-        CHANGE_LASTNAME,
-        SET_ERROR,
+import {SET_ERROR,
         SET_CAT_NAME,
         SET_ALL_CAT,
         AUTH,
         LOGOUT,
         SIGNUP,
         SIGNIN,
-    
+        SET_TRANSACTIONS,
+        NEW_TRANSACTION,
+        SET_INCOMES,
+        SET_OUTCOMES,
+        SET_BALANCE
+
     }
 from '../actions/actionTypes';
-import {useDispatch, useSelector} from 'react-redux'
 
 
 
-export function setUser(user){
-    return {type: CHANGE_USER, payload: { user } };
-}
 
-export function setMail(mail){
-    return {type: CHANGE_EMAIL, payload: { mail } };
-}
-
-export function setPassword(password){
-    return {type: CHANGE_PASSWORD, payload: { password } };
-}
 
 export function setError(errors){
   
     return {type: SET_ERROR, payload: {errors: errors.errors}}
 }
 
-export function setName(name){
-    return {type: CHANGE_NAME, payload: { name } };
-}
 
-
-export function setLastName(lastname){
-    return {type: CHANGE_LASTNAME, payload: { lastname } };
-}
 
 export function setCatName(catname){
     return {type: SET_CAT_NAME, payload: { catname } };
@@ -66,6 +47,25 @@ export  function onSignUp(result, token){
 export function onSignIn(result, token){       
     return {type: SIGNIN, payload: { result, token } };
 }
+
+export function onSetUserTransactions(data){
+    
+   console.log(data)
+     return {type: SET_TRANSACTIONS, payload: { transactions: data?.userTransactions} };
+   
+    
+}
+
+
+
+
+export function setNewTransaction(data){
+return {type: NEW_TRANSACTION, payload:{ transactions: data.data.transaction}}
+
+}
+
+
+
 
 
 

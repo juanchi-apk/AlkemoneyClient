@@ -1,26 +1,27 @@
-import axios from 'axios'
+import axios from 'axios';
 
-const api = axios.create({baseURL: 'http://localhost:3001'})
 
-export async function getUserTransactions (userData) {
 
-            try {
 
-                const response = api.get('/transactions/get',{
-                    headers: {
-                      Authorization: `Bearer ${userData.token}` //the token is a variable which holds the token
-                    }
-                   })
+const api = axios.create({
+  baseURL: 'http://localhost:3001',
+  
+})
 
-                return response.data
-            
-            } catch (error) {
-        
-                console.log(error.response)
-            }
-            
-            
-        
-        }
+export  async function createNewCategory (category) {
 
-        
+
+
+
+    try {
+      const response =   await api.post('/categories/add',{data:{category}})
+     
+       return response?.data
+
+   } catch (error) {
+       
+       console.log(error.response)
+   }
+
+   
+          }

@@ -1,88 +1,44 @@
 
-  import React, {useState}  from 'react';
+  import React, {useState, useEffect}  from 'react';
   import {setCatName, setError} from '../store/payloads/actions';
   import { connect } from 'react-redux';
-  import axios from 'axios';
-  import ('./CategoryCreate.scss')
+  import { createNewCategory } from '../api/dashboard';
+  import { setAllCategories , onGetCategories } from '../store/payloads/actions';
+   import ('./CategoryCreate.scss')
 
   function CategoryCreate({onCatNameChange, onFormErrors,catname,errors}){
    
     const [prodFormErrors, setprodFormErrors] = useState(false);
+    const [newCategory, setNewCategory] = useState("")
 
-    async function newUser (event){
+    async function createCategory(event){
       
       event.preventDefault();
 
-      try {
-        const response = await axios.post(`http://localhost:3001/categories/add`, {
-          catname
-        });
-    
-        // Success 🎉
-        console.log(response);
-    } catch (error)  {
-      console.log(error)
-      setprodFormErrors(true);
-      /*   if (error.response) {
-           
-            if (error.response.status===404){
-                onFormErrors(null)
-            }
-            else{
-            
-                onFormErrors( error.response.data)
-
-            }
+      const response = await createNewCategory(newCategory)
+       
  
-         
-        } else if (error.request) {
-            console.log("oesto" , error)
-            return error
-        } else { 
-       
-       
-
-        } */
-        
+      setAllCategories(response.data.categories)
       
-    } 
-    
-   
+      window.location.reload(false);
+
+
+         
   }
+
+
     return (
       
           
-            <div className="container-fluid mx-auto col-sm-12">
-            <div className="col-sm-5 mx-auto">
-            <form>
-              <div className="form-group row col-sm-12 mx-auto">
-                <label htmlFor="inputCategory" className="col-sm-3 col-form-label">User</label>
-                <div className="col-sm-9">
-                  <input type="text" className="form-control " name="inputCategory" id="inputCategory" placeholder="Insert New Category" onInput={(e) => onCatNameChange(e.target.value)}/>
+            
+              <div className="form-group row col-sm-12 mx-auto CatForm">
+                <label htmlFor="inputCategory" className="col-sm-3 col-form-label">Or create</label>
+                <div className="col-sm-9 ">
+                <input type="text" className="form-control col-sm-5" name="inputCategory" id="inputCategory" placeholder="Insert New Category" onInput={(e) => setNewCategory(e.target.value)}/>
+                <button  type="submit" className="btn btn-primary col-sm-3" onClick={event=>createCategory(event)}>Create!</button>
                 </div>
-              </div>
- 
-              { prodFormErrors&&(
-                console.log(errors)
-                /* errors.errors.map( function (element) {
-                    console.log(element);
-                    return(
-                      <div className="form-group row col-sm-12 mx-auto">
-                      <p><small className ="text-center errors" >{element.msg}</small></p>
-
-                      </div>
-                    )
-                }) */
-              ) }
-              <div className="form-group row mx-auto">
-                <div className="offset-sm-2 col-sm-10">
-                  <button type="submit" className="btn btn-primary" onClick={event=>newUser(event)}>Create!</button>
-                </div>
-              </div>
-            </form>
-            </div>
-          </div>
-    
+                </div> 
+        
       )
   }
 

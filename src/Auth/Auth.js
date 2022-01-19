@@ -8,7 +8,7 @@ import { Fade } from 'react-reveal';
 import { GoogleLogin } from 'react-google-login';
 import { useDispatch, useSelector } from 'react-redux';
 import { onAuth , onSignUp, onSignIn} from '../store/payloads/actions';
-import {signUpUser, signInUser ,singWithGoogle } from '../api/auth';
+import {userSignUp, signInUser ,singWithGoogle } from '../api/auth';
 
 import("./Auth.scss");
 
@@ -26,11 +26,11 @@ const formStateData = {
 const googleID= "701837201168-ja3csd91ipqfietfuvi09pc3cmtnqijr.apps.googleusercontent.com";
 
 
-function Auth({ onAuthLogin, signUpUsers, signInUsers }) {
-    
+function Auth() {
+    const stateUser = useSelector(state => state.authData);
     const navigate = useNavigate()
     const [isSignUp, setIsSignUp] = useState(false)
-    const [users, setUsers] = useState(JSON.parse(localStorage.getItem('profile')))
+    const [users, setUsers] = useState(stateUser)
     const [formData, setFormData] = useState(formStateData)
     const dispatch = useDispatch()
 
@@ -43,10 +43,18 @@ function Auth({ onAuthLogin, signUpUsers, signInUsers }) {
         event.preventDefault();
         
         if(!isSignUp) {
-            await signUpUsers(formData)
+            const results = await userSignUp(formData)
+            const {data} = results;
+            const{result, token} = data;
+            console.log(result)
+            console.log(token)
+            dispatch(onAuth(result, token))
             navigate('/dashboard', { replace: true })
-        } else {
-            await signInUsers(formData)
+         } else {
+            const results = await signInUser(formData)
+            const {data} = results; 
+            const{result, token} = data;
+            dispatch(onAuth(result, token))
             navigate('/dashboard', { replace: true })
 
         }
@@ -72,7 +80,7 @@ function Auth({ onAuthLogin, signUpUsers, signInUsers }) {
     }
 
     useEffect(() => {
-        setUsers(JSON.parse(localStorage.getItem('profile')))
+        setUsers(stateUser)
     },[]) 
 
   
@@ -200,39 +208,6 @@ function Auth({ onAuthLogin, signUpUsers, signInUsers }) {
 }
 
 
-const mapStateToProps = (state) => {
-
-    return {
-        user: state.user,
-        mail: state.mail,
-        password: state.password,
-        errors: state.errors,
-        name: state.name,
-        lastname: state.lastname,
-
-    }
-}
-
-
-function mapDispatchToProps(dispatch) {
-    return {
-        onAuthLogin:  async function (result, token) {
-          
-        },
-
-        signUpUsers: async function (formData){
-            const user = await signUpUser(formData)
-            const {result, token} = user.data
-            dispatch( onSignUp(result, token))
-        },
-
-        signInUsers:  async function (formData){
-            const user = await signInUser(formData)
-            const {result, token} = user.data
-            dispatch( onSignIn(result, token))
-        }
-    }
-}
 
 export default Auth;
 

@@ -10,8 +10,8 @@ export const AUTH = 'AUTH';
 export const LOGOUT = 'LOGOUT';
 export const SIGNUP = 'SIGNUP';
 export const SIGNIN = 'SIGNIN';
-
-
+export const SET_TRANSACTIONS = 'SET_TRANSACTIONS';
+export const NEW_TRANSACTION = 'NEW_TRANSACTION';
 
 
 
