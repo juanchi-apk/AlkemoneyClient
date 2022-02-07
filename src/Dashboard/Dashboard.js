@@ -4,6 +4,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import { onSetUserTransactions, setUserBalance, setUserIncomes, setUserOutcomes } from '../store/payloads/actions';
 import TransactionCreate from '../admin/TransactionCreate';
 import TransactionBoard from '../admin/TransactionBoard';
+import { useModal } from '../Hooks/useModal';
+import Modal from '../Modals/modal'
 import("./dashboard.scss");
 
 
@@ -17,6 +19,7 @@ const Dashboard = ()=>{
     const [userData, setUserData] = useState(stateUser)
     const [userTransactions, setUserTransactions] = useState(stateTransactions)
     const [userBalance , setUserBalance] = useState(stateBalance);
+    const  [createIsOpen, createOpenModal, createCloseModal] = useModal(false)
     const dispatch = useDispatch()
     
 
@@ -42,6 +45,7 @@ const Dashboard = ()=>{
     console.log(stateTransactions)
     console.log(stateBalance)
 
+
         
   
     return (<div className='dashboardContainer'>
@@ -56,9 +60,22 @@ const Dashboard = ()=>{
         Bienvenido {userData?.result.givenName}! Tu Balance total es <strong>{`$ ${stateBalance}`}</strong>!
 
         </div>
-        <TransactionBoard transactions={stateTransactions}/>
-         <TransactionCreate userData={userData}/>
         
+        <div className = "row">
+
+         <div  className ="col-sm-8">
+         <TransactionBoard userData= {userData} transactions={stateTransactions}/>
+         </div>
+         <div className ="col-sm-4">
+         <button type="button" className="btn btn-danger createButton" onClick={createOpenModal}> + CREATE NEW TRANSACTION</button>
+         
+         </div>
+
+         </div>
+         {createIsOpen&&(<Modal  isOpen = {createIsOpen} closeModal = {createCloseModal}>
+            {userData&&(<TransactionCreate  userData={userData}/>)}
+         </Modal>)}
+         
         </div>
          </div>)
 
